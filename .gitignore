@@ -1,0 +1,11 @@
+# Virutal Env
+env_projet_M1/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Mac system
+.DS_Store
