@@ -3,20 +3,22 @@ import math
 from matplotlib import pyplot as plt
 
 
-# Size of the mesh
-def mesh_generation(n):
-    Lx = 2 * math.pi  # x-dir
-    Ly = Lx  # y-dir
+# Generating mesh for a 2D problem
+def mesh_generation(n, m, interval=[2 * math.pi, 2 * math.pi], plot=False):
+    # n is now an argument n = 20, it corresponds to the number of cells in x-dir
+    # m is now an argument m = 20, it corresponds to the number of cells in y-dir
+    # if not evenly spaced
 
-    # n is now an argument n = 20  # number of cells in x-dir
-    m = n  # number of cells in y-dir
+    evenly_spaced = m == n
 
-    evenly_spaced = True  # if the mesh is evenly spaced or not
+    Lx = interval[0]  # x-dir
+    Ly = interval[1]  # y-dir
 
     x_list = np.zeros(n + 1)
     y_list = np.zeros(m + 1)
 
     if evenly_spaced:
+        m = n
         # if evenly spaced, then the following is enough
         x_list = np.linspace(0, Lx, n + 1)  # x-coordinates of the mesh
         y_list = np.linspace(0, Ly, m + 1)  # y-coordinates of the mesh
@@ -34,29 +36,30 @@ def mesh_generation(n):
         for j in range(m):
             y_list[j + 1] = y_list[j] + delta_y
 
-    # red dots
-    for i in range(n + 1):
+    if plot:
+        # Not showing for coding purposes most of the time
+        # red dots
+        for i in range(n + 1):
+            for j in range(m + 1):
+                plt.plot(x_list[i], y_list[j], "ro")
+
+        # vertical and horizontal lines
+        for i in range(n + 1):
+            # plottting [y0, yn] at [x, x]
+            # using b- (plotting only between two points)
+            plt.plot([x_list[i], x_list[i]], [y_list[0], y_list[-1]], "b-")
+
         for j in range(m + 1):
-            plt.plot(x_list[i], y_list[j], "ro")
+            # plottting [x0, xn] at [y, y]
+            # using b- (plotting only between two points)
+            plt.plot([x_list[0], x_list[-1]], [y_list[j], y_list[j]], "b-")
 
-    # vertical and horizontal lines
-    for i in range(n + 1):
-        # plottting [y0, yn] at [x, x]
-        # using b- (plotting only between two points)
-        plt.plot([x_list[i], x_list[i]], [y_list[0], y_list[-1]], "b-")
+        plt.title("Rectangular Mesh")
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.axis("equal")
 
-    for j in range(m + 1):
-        # plottting [x0, xn] at [y, y]
-        # using b- (plotting only between two points)
-        plt.plot([x_list[0], x_list[-1]], [y_list[j], y_list[j]], "b-")
+        plt.savefig("./results/new_mesh.pdf", format="pdf")
 
-    plt.title("Rectangular Mesh")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.axis("equal")
-
-    # plt.savefig("new_mesh.pdf", format="pdf")
-
-    # Not showing for coding purposes
-    # plt.show()
+        plt.show()
     return x_list, y_list
