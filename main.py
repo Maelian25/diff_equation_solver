@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     print(f"Time to compute {n_max-n_min} iterations : {end-start:.2f} s")
 
-    k_plot = 2
+    k_plot = 80
 
     print(f"Now ploting solution for n = {k_plot} and m ={k_plot}...")
 
