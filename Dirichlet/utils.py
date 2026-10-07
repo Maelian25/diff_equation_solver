@@ -55,7 +55,7 @@ def second_member(x, y):
 
 
 def second_member_2(x, y):
-    # compute second member f(x,y) = 2 * cos(x)*cos(y)
+    # compute second member f(x,y) = 2 * sin(x)*sin(y)
     return 2 * math.sin(x) * math.sin(y)
 
 
