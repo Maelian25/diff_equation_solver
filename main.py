@@ -41,7 +41,7 @@ def solve(n, m):
     U_hat_list = [
         (
             F_hat[i, j] / (eigen_values_P[i] + eigen_values_Q[j])
-            if eigen_values_P[i] > 1e-7 and eigen_values_Q[j] > 1e-7
+            if np.abs(eigen_values_P[i]) > 1e-7 or np.abs(eigen_values_Q[j]) > 1e-7
             else 0
         )
         for i in range(F_hat.shape[0])
@@ -53,12 +53,17 @@ def solve(n, m):
     U_first = P @ U_hat
     U = U_first @ Q.T
 
+    # Compute residual
+    R_first = Ax @ U + U @ Ay.T
+    R = R_first - F(X, Y)
+
     return {
         "Solution": U,
         "X": X,
         "Y": Y,
         "eigen_values_P": eigen_values_P,
         "eigen_values_Q": eigen_values_Q,
+        "residual": R,
     }
 
 
@@ -104,6 +109,10 @@ def plot_solution(n, m, problem_name, save=True):
     if save:
         plt.savefig(f"./results/{problem_name}_solution_plot.pdf", format="pdf")
     plt.show()
+
+    # print residual to check on the case of question 4.8
+    print("max |R| :", np.max(np.abs(s["residual"])))
+    print("mean R  :", np.mean(s["residual"]))
 
 
 if __name__ == "__main__":
