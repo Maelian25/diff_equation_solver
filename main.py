@@ -54,7 +54,7 @@ def solve(n, m):
     U = U_first @ Q.T
 
     # Compute residual
-    R_first = Ax @ U + U @ Ay.T
+    R_first = Ax_tilde @ U + U @ Ay_tilde.T
     R = R_first - F(X, Y)
 
     return {
