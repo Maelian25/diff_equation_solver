@@ -8,7 +8,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-from utils import M_tilde, diag_M, matrix_invert, V, F, edge_conditions
+from utils import M_tilde, diag_M, matrix_invert, V_2, F_2, edge_conditions_2
 from matrix_filler_bis import fill_Ax, fill_Ay, fill_Bx, fill_By
 from matrix_creation import a_hat, b_hat
 from mesh_generation import mesh_generation
@@ -18,7 +18,7 @@ def solve(n, m):
     # Solve for mesh (nxm)
     X, Y = mesh_generation(n, m, plot=False)
 
-    edge_con = edge_conditions(X, Y)
+    edge_con = edge_conditions_2(X, Y)
 
     Ax = fill_Ax(X, a_hat)
     Ay = fill_Ay(Y, a_hat)
@@ -48,7 +48,7 @@ def solve(n, m):
 
     # Change F so that it takes border into account
     # Before canceling border values for Ax_tilde and Ay_tilde
-    F_new = F(X, Y) - (Ax_tilde_0 @ edge_con + edge_con @ Ay_tilde_0.T)
+    F_new = F_2(X, Y) - (Ax_tilde_0 @ edge_con + edge_con @ Ay_tilde_0.T)
     F_hat_first = F_new @ Q_inv.T
     F_hat = P_inv @ F_hat_first
 
@@ -74,7 +74,7 @@ def solve(n, m):
 
     # Compute residual
     R_first = Ax_tilde_0 @ U + U @ Ay_tilde_0.T
-    R = R_first - F(X, Y)
+    R = R_first - F_2(X, Y)
 
     return {
         "Solution": U,
@@ -105,7 +105,7 @@ def plot_solution(n, m, problem_name, save=True):
 
     # Exact solution in 3D
     ax2 = fig.add_subplot(1, 3, 2, projection="3d")
-    surf2 = ax2.plot_surface(XX, YY, V(s["X"], s["Y"]), cmap="viridis")
+    surf2 = ax2.plot_surface(XX, YY, V_2(s["X"], s["Y"]), cmap="viridis")
     ax2.set_title("Exact Solution")
     ax2.set_xlabel("x")
     ax2.set_ylabel("y")
@@ -114,10 +114,10 @@ def plot_solution(n, m, problem_name, save=True):
     # Absolute error map
     ax3 = fig.add_subplot(1, 3, 3)
     cf = ax3.contourf(
-        XX, YY, np.abs(s["Solution"] - V(s["X"], s["Y"])), levels=30, cmap="magma"
+        XX, YY, np.abs(s["Solution"] - V_2(s["X"], s["Y"])), levels=30, cmap="magma"
     )
     ax3.set_title(
-        f"|U - V|  (max = {np.abs(s["Solution"] - V(s["X"], s["Y"])).max():.2e})"
+        f"|U - V|  (max = {np.abs(s["Solution"] - V_2(s["X"], s["Y"])).max():.2e})"
     )
     ax3.set_xlabel("x")
     ax3.set_ylabel("y")
@@ -182,7 +182,7 @@ if __name__ == "__main__":
         eigen_values_P = s["eigen_values_P"]
         eigen_values_Q = s["eigen_values_Q"]
 
-        E = U - V(X, Y)
+        E = U - V_2(X, Y)
         log_e = np.log(np.max(abs(E)) + 1e-7)
         log_e_evo.append(log_e)
 

@@ -44,9 +44,19 @@ def exact_solution(x, y):
     return math.cos(x) * math.cos(y)
 
 
+def exact_solution_2(x, y):
+    # compute f(x,y) = cos(x)*cos(y)
+    return math.sin(x) * math.sin(y)
+
+
 def second_member(x, y):
     # compute second member f(x,y) = 2 * cos(x)*cos(y)
     return 2 * math.cos(x) * math.cos(y)
+
+
+def second_member_2(x, y):
+    # compute second member f(x,y) = 2 * cos(x)*cos(y)
+    return 2 * math.sin(x) * math.sin(y)
 
 
 def V(X, Y):
@@ -59,12 +69,31 @@ def V(X, Y):
     return V
 
 
+def V_2(X, Y):
+    # X and Y are vectors
+    V = np.zeros((len(X), len(Y)))
+    for i in range(len(X)):
+        for j in range(len(Y)):
+            V[i][j] = exact_solution_2(X[i], Y[j])
+
+    return V
+
+
 def F(X, Y):
     # X and Y are vectors
     F = np.zeros((len(X), len(Y)))
     for i in range(len(X)):
         for j in range(len(Y)):
             F[i][j] = second_member(X[i], Y[j])
+    return F
+
+
+def F_2(X, Y):
+    # X and Y are vectors
+    F = np.zeros((len(X), len(Y)))
+    for i in range(len(X)):
+        for j in range(len(Y)):
+            F[i][j] = second_member_2(X[i], Y[j])
     return F
 
 
@@ -82,5 +111,21 @@ def edge_conditions(
 
     sol[0, :] = np.cos(left_lim) * np.cos(Y)
     sol[-1, :] = np.cos(right_lim) * np.cos(Y)
+
+    return sol
+
+
+def edge_conditions_2(
+    X,
+    Y,
+):
+
+    sol = np.zeros((len(X), len(Y)))
+
+    sol[:, 0] = 0
+    sol[:, -1] = 0
+
+    sol[0, :] = 0
+    sol[-1, :] = 0
 
     return sol
