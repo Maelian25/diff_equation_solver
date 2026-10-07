@@ -4,12 +4,11 @@ import numpy as np
 # a_hat is the matrix when integrathing d(phi)
 def fill_Ax(X, a_hat):
 
-    n = len(X) - 1
+    n = len(X)
     # Initiating matrix of size n+1 with zeros
-    Ax = np.zeros((n + 1, n + 1))
+    Ax = np.zeros((n, n))
 
-    for k in range(n):
-        # Loop through every rectangle
+    for k in range(n - 1):
         hk = X[k] - X[k + 1]
         # Compute the constant C_xk
         C_xk: float = 1.0 / hk
@@ -22,11 +21,11 @@ def fill_Ax(X, a_hat):
 # b_hat is the matrix when integrating phi
 def fill_Bx(X, b_hat):
 
-    n = len(X) - 1
+    n = len(X)
     # Initiating matrix of size n+1 with zeros
-    Bx = np.zeros((n + 1, n + 1))
+    Bx = np.zeros((n, n))
 
-    for k in range(n):
+    for k in range(n - 1):
         # Loop through every rectangle
         hk = X[k] - X[k + 1]
         # Compute the constant C_xk
