@@ -2,6 +2,8 @@ import numpy as np
 
 import time
 
+import os
+
 import matplotlib.pyplot as plt
 
 from utils import M_tilde, diag_M, matrix_invert, V, F
@@ -58,7 +60,7 @@ def solve(n, m):
     }
 
 
-def plot_solution(n, m, save=True):
+def plot_solution(n, m, problem_name, save=True):
 
     plt.close()
     s = solve(n, m)
@@ -98,13 +100,18 @@ def plot_solution(n, m, save=True):
 
     plt.tight_layout()
     if save:
-        plt.savefig("./results/solution_plot.pdf", format="pdf")
+        plt.savefig(f"./results/{problem_name}_solution_plot.pdf", format="pdf")
     plt.show()
 
 
 if __name__ == "__main__":
     # we used now a square mesh, so n=m
     # still handles cases where n != m
+
+    if not os.path.exists("./results"):
+        os.makedirs("./results")
+
+    problem_name = "Neumann_4.6"
     n_min = 10
     n_max = 100
 
@@ -154,7 +161,7 @@ if __name__ == "__main__":
     plt.title("Log E fn of log Delta X")
     plt.grid(True, which="both", ls="--")
     if save:
-        plt.savefig("log_e_fn_delta_x.pdf", format="pdf")
+        plt.savefig(f"./results/{problem_name}_log_e_fn_delta_x.pdf", format="pdf")
     plt.show()
 
     x_axis = list(range(n_min, n_max, 2))
@@ -169,7 +176,7 @@ if __name__ == "__main__":
     plt.grid(True, which="both", ls="--")
     plt.legend()
     if save:
-        plt.savefig("min_eigen_value_graph.pdf", format="pdf")
+        plt.savefig(f"./results/{problem_name}_min_eigen_value_graph.pdf", format="pdf")
     plt.show()
 
     y_regression = slope * np.array(delta_x_evo) + x_origin
@@ -184,7 +191,9 @@ if __name__ == "__main__":
     plt.grid(True, which="both", ls="--")
     plt.legend()
     if save:
-        plt.savefig("linear_regression_plot.pdf", format="pdf")
+        plt.savefig(
+            f"./results/{problem_name}_linear_regression_plot.pdf", format="pdf"
+        )
     plt.show()
 
     print(f"Time to compute {n_max-n_min} iterations : {end-start:.2f} s")
@@ -193,4 +202,4 @@ if __name__ == "__main__":
 
     print(f"Now ploting solution for n = {k_plot} and m ={k_plot}...")
 
-    plot_solution(k_plot, k_plot)
+    plot_solution(k_plot, k_plot, problem_name, save)
