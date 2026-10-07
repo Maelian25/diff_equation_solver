@@ -113,7 +113,10 @@ if __name__ == "__main__":
     # Handles argument so that code don't change between calls
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-s", "--save", type=bool, default=False, help="Whether we save or not"
+        "-s",
+        "--save",
+        action="store_true",
+        help="Whether we save or not",
     )
     parser.add_argument(
         "-pb",
@@ -127,7 +130,7 @@ if __name__ == "__main__":
     if not os.path.exists("./results"):
         os.makedirs("./results")
 
-    problem_name = args.problem_name | ""
+    problem_name = args.problem_name or ""
     n_min = 10
     n_max = 100
 
