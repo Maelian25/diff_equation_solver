@@ -107,7 +107,7 @@ def plot_solution(n, m, problem_name, save=True):
 
     plt.tight_layout()
     if save:
-        plt.savefig(f"./results/{problem_name}_solution_plot.pdf", format="pdf")
+        plt.savefig(f"../results/{problem_name}_solution_plot.pdf", format="pdf")
     plt.show()
 
     # print residual to check on the case of question 4.8
@@ -136,8 +136,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Make sure the folder exists
-    if not os.path.exists("./results"):
-        os.makedirs("./results")
+    if not os.path.exists("../results"):
+        os.makedirs("../results")
 
     problem_name = args.problem_name or ""
     n_min = 10
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     plt.title("Log E fn of log Delta X")
     plt.grid(True, which="both", ls="--")
     if args.save:
-        plt.savefig(f"./results/{problem_name}_log_e_fn_delta_x.pdf", format="pdf")
+        plt.savefig(f"../results/{problem_name}_log_e_fn_delta_x.pdf", format="pdf")
     plt.show()
 
     x_axis = list(range(n_min, n_max, 2))
@@ -202,7 +202,9 @@ if __name__ == "__main__":
     plt.grid(True, which="both", ls="--")
     plt.legend()
     if args.save:
-        plt.savefig(f"./results/{problem_name}_min_eigen_value_graph.pdf", format="pdf")
+        plt.savefig(
+            f"../results/{problem_name}_min_eigen_value_graph.pdf", format="pdf"
+        )
     plt.show()
 
     y_regression = slope * np.array(delta_x_evo) + x_origin
@@ -218,7 +220,7 @@ if __name__ == "__main__":
     plt.legend()
     if args.save:
         plt.savefig(
-            f"./results/{problem_name}_linear_regression_plot.pdf", format="pdf"
+            f"../results/{problem_name}_linear_regression_plot.pdf", format="pdf"
         )
     plt.show()
 
