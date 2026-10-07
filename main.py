@@ -1,3 +1,5 @@
+import argparse
+
 import numpy as np
 
 import time
@@ -108,10 +110,24 @@ if __name__ == "__main__":
     # we used now a square mesh, so n=m
     # still handles cases where n != m
 
+    # Handles argument so that code don't change between calls
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-s", "--save", type=bool, default=False, help="Whether we save or not"
+    )
+    parser.add_argument(
+        "-pb",
+        "--problem_name",
+        type=str,
+        help="Name of the question/problem name",
+    )
+    args = parser.parse_args()
+
+    # Make sure the folder exists
     if not os.path.exists("./results"):
         os.makedirs("./results")
 
-    problem_name = "Neumann_4.6"
+    problem_name = args.problem_name | ""
     n_min = 10
     n_max = 100
 
@@ -122,8 +138,6 @@ if __name__ == "__main__":
     log_e_evo = []
     min_eigen_value_P = []
     min_eigen_value_Q = []
-
-    save = False
 
     start = time.time()
 
@@ -160,7 +174,7 @@ if __name__ == "__main__":
     plt.ylabel("log(Max error)")
     plt.title("Log E fn of log Delta X")
     plt.grid(True, which="both", ls="--")
-    if save:
+    if args.save:
         plt.savefig(f"./results/{problem_name}_log_e_fn_delta_x.pdf", format="pdf")
     plt.show()
 
@@ -175,7 +189,7 @@ if __name__ == "__main__":
     plt.title("Evo of the min eigen value fn of delta x")
     plt.grid(True, which="both", ls="--")
     plt.legend()
-    if save:
+    if args.save:
         plt.savefig(f"./results/{problem_name}_min_eigen_value_graph.pdf", format="pdf")
     plt.show()
 
@@ -190,7 +204,7 @@ if __name__ == "__main__":
     plt.title("Convergence and method order")
     plt.grid(True, which="both", ls="--")
     plt.legend()
-    if save:
+    if args.save:
         plt.savefig(
             f"./results/{problem_name}_linear_regression_plot.pdf", format="pdf"
         )
@@ -202,4 +216,4 @@ if __name__ == "__main__":
 
     print(f"Now ploting solution for n = {k_plot} and m ={k_plot}...")
 
-    plot_solution(k_plot, k_plot, problem_name, save)
+    plot_solution(k_plot, k_plot, problem_name, args.save)
