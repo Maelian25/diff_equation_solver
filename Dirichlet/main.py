@@ -8,7 +8,7 @@ import os
 
 import matplotlib.pyplot as plt
 
-from utils import M_tilde, diag_M, matrix_invert, V, F
+from utils import M_tilde, diag_M, matrix_invert, V, F, edge_conditions
 from matrix_filler_bis import fill_Ax, fill_Ay, fill_Bx, fill_By
 from matrix_creation import a_hat, b_hat
 from mesh_generation import mesh_generation
@@ -17,6 +17,8 @@ from mesh_generation import mesh_generation
 def solve(n, m):
     # Solve for mesh (nxm)
     X, Y = mesh_generation(n, m, plot=False)
+
+    edge_con = edge_conditions(X, Y)
 
     Ax = fill_Ax(X, a_hat)
     Ay = fill_Ay(Y, a_hat)
@@ -27,6 +29,15 @@ def solve(n, m):
     Ax_tilde = M_tilde(A=Ax, B=Bx)
     Ay_tilde = M_tilde(A=Ay, B=By)
 
+    # Making copy to compute F and the residual as well
+    Ax_tilde_0, Ay_tilde_0 = Ax_tilde.copy(), Ay_tilde.copy()
+
+    # Cancelling now border values of Ax_tilde and Ay_tilde
+    Ax_tilde[:, 0] = 0
+    Ax_tilde[:, -1] = 0
+    Ay_tilde[:, 0] = 0
+    Ay_tilde[:, -1] = 0
+
     eigen_values_P, P = diag_M(Ax_tilde)
     eigen_values_Q, Q = diag_M(Ay_tilde)
 
@@ -35,7 +46,10 @@ def solve(n, m):
 
     # print(f"Q_inv shape {Q_inv.shape}")
 
-    F_hat_first = F(X, Y) @ Q_inv.T
+    # Change F so that it takes border into account
+    # Before canceling border values for Ax_tilde and Ay_tilde
+    F_new = F(X, Y) - (Ax_tilde_0 @ edge_con + edge_con @ Ay_tilde_0.T)
+    F_hat_first = F_new @ Q_inv.T
     F_hat = P_inv @ F_hat_first
 
     U_hat_list = [
@@ -53,8 +67,13 @@ def solve(n, m):
     U_first = P @ U_hat
     U = U_first @ Q.T
 
+    U[:, 0] = edge_con[:, 0]
+    U[:, -1] = edge_con[:, -1]
+    U[0, :] = edge_con[0, :]
+    U[-1, :] = edge_con[-1, :]
+
     # Compute residual
-    R_first = Ax_tilde @ U + U @ Ay_tilde.T
+    R_first = Ax_tilde_0 @ U + U @ Ay_tilde_0.T
     R = R_first - F(X, Y)
 
     return {
@@ -63,7 +82,7 @@ def solve(n, m):
         "Y": Y,
         "eigen_values_P": eigen_values_P,
         "eigen_values_Q": eigen_values_Q,
-        "residual": R,
+        "residual": R[1:-1, 1:-1],
     }
 
 

@@ -66,3 +66,21 @@ def F(X, Y):
         for j in range(len(Y)):
             F[i][j] = second_member(X[i], Y[j])
     return F
+
+
+def edge_conditions(
+    X,
+    Y,
+):
+    left_lim, right_lim = X[0], X[-1]
+    down_lim, up_lim = Y[0], Y[-1]
+
+    sol = np.zeros((len(X), len(Y)))
+
+    sol[:, 0] = np.cos(X) * np.cos(down_lim)
+    sol[:, -1] = np.cos(X) * np.cos(up_lim)
+
+    sol[0, :] = np.cos(left_lim) * np.cos(Y)
+    sol[-1, :] = np.cos(right_lim) * np.cos(Y)
+
+    return sol
