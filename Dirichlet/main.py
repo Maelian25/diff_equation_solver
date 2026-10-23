@@ -26,17 +26,9 @@ def solve(n, m):
     Bx = fill_Bx(X, b_hat)
     By = fill_By(Y, b_hat)
 
-    Ax_tilde = M_tilde(A=Ax, B=Bx)
-    Ay_tilde = M_tilde(A=Ay, B=By)
-
-    # Making copy to compute F and the residual as well
-    Ax_tilde_0, Ay_tilde_0 = Ax_tilde.copy(), Ay_tilde.copy()
-
-    # Cancelling now border values of Ax_tilde and Ay_tilde
-    Ax_tilde[:, 0] = 0
-    Ax_tilde[:, -1] = 0
-    Ay_tilde[:, 0] = 0
-    Ay_tilde[:, -1] = 0
+    # Canceling border values, not considering them
+    Ax_tilde = M_tilde(A=Ax[1:-1, 1:-1], B=Bx[1:-1, 1:-1])
+    Ay_tilde = M_tilde(A=Ay[1:-1, 1:-1], B=By[1:-1, 1:-1])
 
     eigen_values_P, P = diag_M(Ax_tilde)
     eigen_values_Q, Q = diag_M(Ay_tilde)
@@ -48,33 +40,29 @@ def solve(n, m):
 
     # Change F so that it takes border into account
     # Before canceling border values for Ax_tilde and Ay_tilde
-    F_new = F_2(X, Y) - (Ax_tilde_0 @ edge_con + edge_con @ Ay_tilde_0.T)
-    F_hat_first = F_new @ Q_inv.T
-    F_hat = P_inv @ F_hat_first
+    # Galerkin's second member, with the edge placed on the right
+    F_new = Bx @ F_2(X, Y) @ By.T - (Ax @ edge_con @ By.T + Bx @ edge_con @ Ay.T)
+    F_new = (
+        matrix_invert(Bx[1:-1, 1:-1])
+        @ F_new[1:-1, 1:-1]
+        @ matrix_invert(By[1:-1, 1:-1]).T
+    )
+
+    F_hat = P_inv @ F_new @ Q_inv.T
 
     U_hat_list = [
-        (
-            F_hat[i, j] / (eigen_values_P[i] + eigen_values_Q[j])
-            if np.abs(eigen_values_P[i]) > 1e-7 or np.abs(eigen_values_Q[j]) > 1e-7
-            else 0
-        )
+        F_hat[i, j] / (eigen_values_P[i] + eigen_values_Q[j])
         for i in range(F_hat.shape[0])
         for j in range(F_hat.shape[1])
     ]  # This produce a list that needs to be reshaped
 
     U_hat = np.array(U_hat_list).reshape(F_hat.shape)
 
-    U_first = P @ U_hat
-    U = U_first @ Q.T
-
-    U[:, 0] = edge_con[:, 0]
-    U[:, -1] = edge_con[:, -1]
-    U[0, :] = edge_con[0, :]
-    U[-1, :] = edge_con[-1, :]
+    U = edge_con.copy()
+    U[1:-1, 1:-1] = P @ U_hat @ Q.T
 
     # Compute residual
-    R_first = Ax_tilde_0 @ U + U @ Ay_tilde_0.T
-    R = R_first - F_2(X, Y)
+    R = Ax_tilde @ U[1:-1, 1:-1] + U[1:-1, 1:-1] @ Ay_tilde.T - F_new
 
     return {
         "Solution": U,
@@ -82,7 +70,7 @@ def solve(n, m):
         "Y": Y,
         "eigen_values_P": eigen_values_P,
         "eigen_values_Q": eigen_values_Q,
-        "residual": R[1:-1, 1:-1],
+        "residual": R,
     }
 
 
