@@ -34,9 +34,7 @@ def solve(n, m):
     Q_inv = matrix_invert(Q)
 
     # print(f"Q_inv shape {Q_inv.shape}")
-
-    F_hat_first = F(X, Y) @ Q_inv.T
-    F_hat = P_inv @ F_hat_first
+    F_hat = P_inv @ F(X, Y) @ Q_inv.T
 
     U_hat_list = [
         (
@@ -50,12 +48,10 @@ def solve(n, m):
 
     U_hat = np.array(U_hat_list).reshape(F_hat.shape)
 
-    U_first = P @ U_hat
-    U = U_first @ Q.T
+    U = P @ U_hat @ Q.T
 
     # Compute residual
-    R_first = Ax_tilde @ U + U @ Ay_tilde.T
-    R = R_first - F(X, Y)
+    R = Ax_tilde @ U + U @ Ay_tilde.T - F(X, Y)
 
     return {
         "Solution": U,
