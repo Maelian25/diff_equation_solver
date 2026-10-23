@@ -129,7 +129,3 @@ Pour changer le cas test, modifiez dans `utils.py` :
 - `matrix_filler.py` et `matrix_filler_bis.py` sont deux versions de l'assemblage ; `main.py` utilise `matrix_filler_bis.py`.
 - `matrix_creation.py` affiche la taille des matrices élémentaires à l'import : c'est normal.
 - La diagonalisation est faite avec `numpy.linalg.eig` ; les petites parties imaginaires parasites dues aux erreurs d'arrondi sont supprimées (on garde la partie réelle).
-
-## Auteur
-
-Projet réalisé par [Maëlian](https://github.com/Maelian25) dans le cadre du M1 MSME à Toulouse.
